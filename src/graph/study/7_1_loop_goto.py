@@ -2,6 +2,7 @@ from random import randint
 from typing import Literal
 
 from langchain_core.messages import HumanMessage, ToolMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import tool
 from langgraph.constants import START, END
 from langgraph.graph import MessagesState, StateGraph
@@ -12,7 +13,7 @@ from study.base.model.chat_model import get_model
 
 @tool(description="获取城市的天气")
 def get_weather(city):
-    return f"{city}的温度为24摄氏度"
+    return f"{city}的温度为25摄氏度"
 
 
 @tool(description="查询特定领域的当日热点")
@@ -109,9 +110,9 @@ graph = builder.compile()
 ai_res = graph.invoke({
     "user_input": "查询今天的上海天气和AI新闻热点",
     "messages": [SystemMessage("如果工具调用失败,必须重新调用直到成功为止")]
-}, config={"recursion_limit": 10})
+}, config=RunnableConfig(recursion_limit=2))
 
-#, config={"recursion_limit": 10}限制递归次数，避免死循环
+# , config={"recursion_limit": 10}限制递归次数，避免死循环
 
 print("user_input:", ai_res["user_input"])
 print("final_output:", ai_res["final_output"])
